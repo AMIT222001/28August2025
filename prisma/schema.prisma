@@ -1,0 +1,20 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model Data {
+  id                 Int      @id
+  price              String
+  volume_24h         String
+  percent_change_1h  String
+  percent_change_24h String
+  percent_change_7d  String
+  createdAt          DateTime @default(now())
+  expiresAt          DateTime
+}
+
