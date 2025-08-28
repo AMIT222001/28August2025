@@ -1,6 +1,7 @@
 import express from "express";
 import env from "./config/env.js"
 import tokenRoutes from "./routes/tokenRoutes.js"
+import "./cron/syncTokendata.js";
 const app=express();
 app.use(express.json({ limit: "50kb" }));
 
