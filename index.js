@@ -10,8 +10,8 @@ async function fetchTokenPrice(tokenId) {
         "X-CMC_PRO_API_KEY": apiKey,
       },
       params: {
-        id: tokenId, // Example: 1 for Bitcoin, 1027 for Ethereum
-        convert: "USD",
+        id: tokenId
+      
       },
     });
 

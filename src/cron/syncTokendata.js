@@ -1,6 +1,7 @@
 // syncTokenData.js
 import fetchTokenPrice from "../services/tokenService.js";
 import { Prisma } from "../config/db.js";
+import cron from "node-cron";
 
 // Sync a single token
 async function syncToken(id) {
@@ -17,7 +18,7 @@ async function syncToken(id) {
         percent_change_1h: tokendata.percent_change_1h,
         percent_change_24h: tokendata.percent_change_24h,
         percent_change_7d: tokendata.percent_change_7d,
-        updatedAt: now,
+        createdAt: now,
         expiresAt: expiresAt,
       },
       create: {
@@ -40,25 +41,18 @@ async function syncToken(id) {
 
 // Sync all tokens sequentially, repeating every 2 seconds
 async function syncAllTokensContinuously() {
-  while (true) {
-    try {
-      // Fetch all token IDs from the database
+  
       const tokens = await Prisma.data.findMany({ select: { id: true } });
-      const tokenIds = tokens.map(t => t.id);
+  const tokenIds=tokens.map(t=>syncToken(t.id));
+  
 
-      for (const id of tokenIds) {
-        await syncToken(id);
-        // Wait 2 seconds before the next token
-        await new Promise(resolve => setTimeout(resolve, 2000));
-      }
-    } catch (error) {
-      console.error("Error in full token sync loop:", error.message);
-    }
 
-    // Optional: wait 2 seconds before starting the next full loop
-    await new Promise(resolve => setTimeout(resolve, 2000));
-  }
+    
 }
 
-// Start the continuous sync
-syncAllTokensContinuously();
+
+cron.schedule("*/2 * * * * *",()=>{
+  console.log("Running task every second",new Date().toLocaleDateString() );
+ syncAllTokensContinuously();
+});
+
